@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Editar Pasante{% else %}Nuevo Pasante{% endif %}{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header py-3" style="background-color: var(--bg-amarillo);">
+                <h5 class="mb-0 text-dark fw-bold">
+                    <i class="bi bi-person-gear me-2"></i>
+                    {% if object %}Modificar Expediente: {{ object }}{% else %}Formulario de Alta de Pasante{% endif %}
+                </h5>
+            </div>
+            <div class="card-body p-4 bg-white">
+                <form method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <h5 class="text-secondary border-bottom pb-2 mb-3">Datos Personales</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombres *</label>
+                            {{ form.nombre }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Apellidos *</label>
+                            {{ form.apellido }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Cédula de Identidad (C.I.) *</label>
+                            {{ form.ci }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Fecha de Nacimiento</label>
+                            {{ form.fecha_nacimiento }}
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end ps-4">
+                            <div class="form-check form-switch mb-2">
+                                {{ form.estado }}
+                                <label class="form-check-label fw-semibold" for="id_estado">Pasante Activo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="text-secondary border-bottom pb-2 mb-3">Contacto e Institución</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Correo Electrónico</label>
+                            {{ form.correo }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Teléfono / Celular</label>
+                            {{ form.telefono }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha de Inicio de Pasantía</label>
+                            {{ form.fecha_inicio }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha de Finalización</label>
+                            {{ form.fecha_fin }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Supervisores Asignados *</label>
+                            {{ form.supervisor }}
+                            <small class="text-muted d-block mt-1">Mantén presionado "Ctrl" para seleccionar más de un supervisor.</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                        <a href="{% url 'pasante_list' %}" class="btn btn-light border">Cancelar</a>
+                        <button type="submit" class="btn btn-rojo px-4 shadow-sm">
+                            <i class="bi bi-save me-2"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

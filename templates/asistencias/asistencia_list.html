@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Log de Asistencias - COMTECO{% endblock title %}
+
+{% block content %}
+<div class="card shadow-sm border-0 rounded-3">
+    <!-- Cabecera Institucional Amarilla -->
+    <div class="card-header border-0 d-flex justify-content-between align-items-center py-3" style="background-color: var(--bg-amarillo);">
+        <h4 class="mb-0 text-dark fw-bold d-flex align-items-center">
+            <img src="/static/images/logo_icono.png" alt="Icono" width="30" height="30" class="me-2">
+            Registro General de Asistencias (Bitácora)
+        </h4>
+        <a href="{% url 'asistencia_marcar' %}" class="btn btn-rojo shadow-sm">
+            <i class="bi bi-patch-check-fill me-2"></i>Pantalla de Marcaje
+        </a>
+    </div>
+    
+    <div class="card-body p-4 bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Pasante</th>
+                        <th>Fecha de Registro</th>
+                        <th>Hora Entrada</th>
+                        <th>Hora Salida</th>
+                        <th>Estado de Jornada</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asistencia in asistencias %}
+                    <tr>
+                        <td class="fw-semibold text-secondary">
+                            {{ asistencia.pasante.nombre }} {{ asistencia.pasante.apellido }}
+                        </td>
+                        <td><i class="bi bi-calendar-event me-2 text-warning"></i>{{ asistencia.fecha_asistencia|date:"d/m/Y" }}</td>
+                        <td class="text-success fw-bold"><i class="bi bi-box-arrow-in-right me-1"></i>{{ asistencia.hora_entrada|time:"H:i" }}</td>
+                        <td class="text-danger fw-bold">
+                            {% if asistencia.hora_salida %}
+                                <i class="bi bi-box-arrow-left me-1"></i>{{ asistencia.hora_salida|time:"H:i" }}
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-dark fw-normal"><i class="bi bi-hourglass-split"></i> En curso</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if asistencia.hora_salida %}
+                                <span class="badge bg-success-subtle text-success py-1.5 px-2.5 rounded-pill">Finalizado</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger py-1.5 px-2.5 rounded-pill animate-pulse">Pendiente Salida</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <a href="{% url 'asistencia_update' asistencia.pk %}" class="btn btn-outline-warning btn-sm text-dark" title="Modificar horas">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a href="{% url 'asistencia_delete' asistencia.pk %}" class="btn btn-outline-danger btn-sm" title="Eliminar registro">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="bi bi-clock-history fs-1 text-secondary d-block mb-2"></i>
+                            No existen registros de asistencia almacenados hoy.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación Inteligente -->
+        {% if is_paginated %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link bg-dark border-dark">{{ page_obj.number }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

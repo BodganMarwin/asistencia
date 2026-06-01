@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - Control de Asistencia{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        max-width: 450px;
+        margin-top: 5vh;
+    }
+    .card-login {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+    }
+    .card-login-header {
+        background-color: var(--bg-amarillo);
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+    .login-logo {
+        max-width: 220px;
+        height: auto;
+    }
+    .form-control:focus {
+        border-color: var(--bg-amarillo);
+        box-shadow: 0 0 0 0.25rem rgba(255, 222, 0, 0.25);
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="container d-flex justify-content-center">
+    <div class="w-100 login-container">
+        <div class="card card-login">
+            <div class="card-login-header">
+                <img src="/static/images/logo_completo.png" alt="COMTECO Logo" class="login-logo mb-2">
+                <h5 class="text-dark mb-0 mt-2 font-weight-bold">Control de Asistencia</h5>
+                <small class="text-muted">Módulo de Pasantes</small>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-secondary">Usuario o Código de Pasante</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-secondary"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Ingrese su usuario" required autocomplete="username">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-secondary">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-secondary"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-rojo py-2 shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Ingresar al Sistema
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <small class="text-muted">¿Problemas con tu acceso? Contacta al Administrador de TI.</small>
+        </div>
+    </div>
+</div>
+{% endblock content %}

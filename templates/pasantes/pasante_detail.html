@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Expediente - {{ pasante.nombre }}{% endblock title %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-3 text-center p-3 mb-4 bg-white">
+            <div class="card-body">
+                <img src="/static/images/logo_icono.png" alt="Avatar" class="img-fluid rounded-circle mb-3 p-1 bg-light border border-2" style="width: 110px;">
+                <h4 class="fw-bold mb-1">{{ pasante }}</h4>
+                <p class="text-muted mb-3">C.I. {{ pasante.ci }}</p>
+                
+                {% if pasante.estado %}
+                    <span class="badge bg-success px-3 py-2 rounded-pill fs-6 w-100 mb-3">Vigente / Activo</span>
+                {% else %}
+                    <span class="badge bg-danger px-3 py-2 rounded-pill fs-6 w-100 mb-3">Inactivo</span>
+                {% endif %}
+                
+                <div class="text-start border-top pt-3 mt-2">
+                    <p class="mb-2"><strong><i class="bi bi-envelope me-2 text-secondary"></i></strong> {{ pasante.correo|default:"No asignado" }}</p>
+                    <p class="mb-2"><strong><i class="bi bi-telephone me-2 text-secondary"></i></strong> {{ pasante.telefono|default:"No asignado" }}</p>
+                    <p class="mb-0"><strong><i class="bi bi-calendar-range me-2 text-secondary"></i>Periodo:</strong><br>
+                    <small class="text-muted">{{ pasante.fecha_inicio|date:"d/m/Y" }} al {{ pasante.fecha_fin|date:"d/m/Y" }}</small></p>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 d-grid gap-2">
+                <a href="{% url 'pasante_update' pasante.pk %}" class="btn btn-outline-warning btn-sm text-dark fw-semibold">
+                    <i class="bi bi-pencil-square me-2"></i>Modificar Ficha
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 rounded-3 bg-white">
+            <div class="card-header border-0 py-3" style="background-color: var(--bg-amarillo);">
+                <h5 class="mb-0 text-dark fw-bold"><i class="bi bi-clock-history me-2"></i>Historial de Asistencias Realizadas</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora Entrada</th>
+                                <th>Hora Salida</th>
+                                <th>Estado Diario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asistencia in asistencias %}
+                            <tr>
+                                <td class="fw-semibold">{{ asistencia.fecha_asistencia|date:"d \d\e F, Y" }}</td>
+                                <td class="text-success fw-bold"><i class="bi bi-box-arrow-in-right me-1"></i>{{ asistencia.hora_entrada }}</td>
+                                <td class="text-danger fw-bold">
+                                    {% if asistencia.hora_salida %}
+                                        <i class="bi bi-box-arrow-left me-1"></i>{{ asistencia.hora_salida }}
+                                    {% else %}
+                                        <span class="text-muted fw-normal italic"><i class="bi bi-dash"></i> Sin registrar</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if asistencia.hora_salida %}
+                                        <span class="badge bg-success-subtle text-success">Completo</span>
+                                    {% else %}
+                                        <span class="badge bg-warning-subtle text-dark">Jornada Abierta</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No tiene registros de marcaciones de asistencia.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

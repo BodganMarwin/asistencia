@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Estación de Marcaje - COMTECO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .clock-display {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--texto-oscuro);
+        letter-spacing: 2px;
+    }
+    /* Estilos del Teclado Numérico en pantalla */
+    .teclado-container {
+        max-width: 320px;
+        margin: 0 auto;
+    }
+    .btn-teclado {
+        font-size: 1.5rem;
+        font-weight: 700;
+        height: 65px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        color: var(--texto-oscuro);
+        transition: all 0.15s ease-in-out;
+    }
+    .btn-teclado:active {
+        background-color: var(--bg-amarillo);
+        transform: scale(0.95);
+    }
+    .btn-teclado-action {
+        font-size: 1.2rem;
+        background-color: #e2e3e5;
+    }
+    /* Input gigante estilo cajero */
+    .input-ci {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-align: center;
+        border: 3px solid var(--bg-amarillo) !important;
+        background-color: #fffde7 !important;
+    }
+    .input-ci:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 222, 0, 0.4) !important;
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="row justify-content-center my-2">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            
+            <!-- Encabezado con Isotipo Circular -->
+            <div class="text-center p-2 bg-white border-bottom position-relative">
+                {% comment %} <img src="/static/images/logo_icono.png" alt="COMTECO" width="70" height="70" class="mb-2"> {% endcomment %}
+                <h3 class="fw-bold text-dark mb-0">Control Asistencia de Pasantes</h3>
+                {% comment %} <p class="text-muted small">Por favor, introduzca su Carnet de Identidad (C.I.)</p> {% endcomment %}
+                
+                <!-- Reloj dinámico integrado -->
+                <div class="mt-2 py-1 px-3 bg-light rounded d-inline-block shadow-sm">
+                    <span id="reloj" class="fw-bold text-dark fs-4">00:00:00</span>
+                    <span class="text-muted mx-1">|</span>
+                    <small id="fecha" class="text-danger fw-bold text-uppercase"></small>
+                </div>
+            </div>
+
+            <!-- Cuerpo del Marcador -->
+            <div class="card-body p-2 bg-white">
+                <form method="POST" id="form">
+                    {% csrf_token %}
+                    
+                    <!-- Input de lectura (Teclado físico + Virtual) -->
+                    <div class="mb-4">
+                        <input type="text" 
+                               name="ci_pasante" 
+                               id="ci_pasante" 
+                               class="form-control input-ci py-2 shadow-sm" 
+                               placeholder="" 
+                               maxlength="10" 
+                               pattern="[0-9]*" 
+                               inputmode="numeric"
+                               required 
+                               autofocus 
+                               autocomplete="off">
+                    </div>
+
+                    <!-- TECLADO NUMÉRICO TÁCTIL EN PANTALLA -->
+                    <div class="teclado-container mb-4">
+                        <div class="row g-2 mb-2">
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('1')">1</button></div>
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('2')">2</button></div>
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('3')">3</button></div>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('4')">4</button></div>
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('5')">5</button></div>
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('6')">6</button></div>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('7')">7</button></div>
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('8')">8</button></div>
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('9')">9</button></div>
+                        </div>
+                        <div class="row g-2">
+                            <!-- Botón de Borrar Todo (C) -->
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado btn-teclado-action text-danger" onclick="borrarTodo()"><i class="bi bi-trash3-fill"></i></button></div>
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado" onclick="agregarNumero('0')">0</button></div>
+                            <!-- Botón de Retroceso / Borrar uno por uno -->
+                            <div class="col-4"><button type="button" class="btn w-100 btn-teclado btn-teclado-action text-secondary" onclick="borrarUltimo()"><i class="bi bi-backspace-fill"></i></button></div>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES DE ACCIÓN PRINCIPALES -->
+                    <div class="row g-3 border-top pt-1">
+                        <!-- Registrar Entrada (Amarillo predominante) -->
+                        <div class="col-6">
+                            <button type="submit" name="accion" value="entrada" class="btn w-100 py-3 fw-bold text-dark border-0 shadow" style="background-color: var(--bg-amarillo); font-size: 1.1rem;">
+                                <i class="bi bi-box-arrow-in-right me-2 fs-5"></i> Registrar Entrada
+                            </button>
+                        </div>
+                        <!-- Registrar Salida (Rojo complementario) -->
+                        <div class="col-6">
+                            <button type="submit" name="accion" value="salida" class="btn btn-rojo w-100 py-3 fw-bold shadow" style="font-size: 1.1rem;">
+                                <i class="bi bi-box-arrow-left me-2 fs-5"></i> Registrar Salida
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    const inputCi = document.getElementById('ci_pasante');
+
+    // Lógica del Teclado Virtual
+    function agregarNumero(numero) {
+        if (inputCi.value.length < 10) { // Límite de longitud igual al max_length del modelo
+            inputCi.value += numero;
+            inputCi.focus();
+        }
+    }
+
+    function borrarTodo() {
+        inputCi.value = '';
+        inputCi.focus();
+    }
+
+    function borrarUltimo() {
+        inputCi.value = inputCi.value.slice(0, -1);
+        inputCi.focus();
+    }
+
+    // Asegurar que solo se escriban números mediante el teclado físico
+    inputCi.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Lógica del Reloj en tiempo real
+    function activarReloj() {
+        const ahora = new Date();
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const segundos = String(ahora.getSeconds()).padStart(2, '0');
+        
+        document.getElementById('reloj').textContent = `${horas}:${minutos}:${segundos}`;
+        
+        const opciones = { day: 'numeric', month: 'short' };
+        document.getElementById('fecha').textContent = ahora.toLocaleDateString('es-ES', opciones);
+    }
+    
+    activarReloj();
+    setInterval(activarReloj, 1000);
+</script>
+{% endblock extra_js %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Pasantes - Control de Asistencia{% endblock title %}
+
+{% block content %}
+<div class="card shadow-sm border-0 rounded-3">
+    <div class="card-header border-0 d-flex justify-content-between align-items-center py-3" style="background-color: var(--bg-amarillo);">
+        <h4 class="mb-0 text-dark fw-bold d-flex align-items-center">
+            <img src="/static/images/logo_icono.png" alt="Icono" width="30" height="30" class="me-2">
+            Administración de Pasantes
+        </h4>
+        <a href="{% url 'pasante_create' %}" class="btn btn-rojo shadow-sm">
+            <i class="bi bi-person-plus-fill me-2"></i>Registrar Nuevo Pasante
+        </a>
+    </div>
+    
+    <div class="card-body p-4 bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre Completo</th>
+                        <th>Cédula (C.I.)</th>
+                        <th>Correo Electrónico</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pasante in pasantes %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'pasante_detail' pasante.pk %}" class="fw-bold text-decoration-none text-dark">
+                                {{ pasante.nombre }} {{ pasante.apellido }}
+                            </a>
+                        </td>
+                        <td>{{ pasante.ci }}</td>
+                        <td>{{ pasante.correo|default:"-" }}</td>
+                        <td>{{ pasante.telefono|default:"-" }}</td>
+                        <td>
+                            {% if pasante.estado %}
+                                <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'pasante_detail' pasante.pk %}" class="btn btn-outline-secondary btn-sm" title="Ver Detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'pasante_update' pasante.pk %}" class="btn btn-outline-warning btn-sm text-dark" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'pasante_delete' pasante.pk %}" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-people fs-1 d-block mb-2 text-secondary"></i>
+                            No se encontraron pasantes registrados en el sistema.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if is_paginated %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link bg-dark border-dark">{{ page_obj.number }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

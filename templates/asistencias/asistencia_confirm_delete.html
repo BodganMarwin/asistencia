@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Remover Registro de Marcación{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header text-white py-3" style="background-color: var(--btn-rojo);">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-shield-slash-fill me-2"></i>Eliminar Marcación Permanente</h5>
+            </div>
+            <div class="card-body p-4 bg-white text-center">
+                <p class="fs-5 text-dark">¿Seguro que desea eliminar el registro de asistencia de:</p>
+                <h4 class="fw-bold text-danger mb-2">{{ object.pasante }}</h4>
+                <p class="text-muted mb-4">Correspondiente al día: <strong>{{ object.fecha_asistencia|date:"d/m/Y" }}</strong></p>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'asistencia_list' %}" class="btn btn-light border px-4">Anular acción</a>
+                        <button type="submit" class="btn btn-danger px-4 shadow-sm" style="background-color: var(--btn-rojo);">
+                            <i class="bi bi-trash3-fill me-2"></i>Eliminar Registro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

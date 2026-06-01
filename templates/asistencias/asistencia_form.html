@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajuste de Asistencia - COMTECO{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header py-3" style="background-color: var(--bg-amarillo);">
+                <h5 class="mb-0 text-dark fw-bold">
+                    <i class="bi bi-pencil-square me-2"></i> Corregir Registro de Asistencia
+                </h5>
+            </div>
+            <div class="card-body p-4 bg-white">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Pasante Vinculado</label>
+                        {{ form.pasante }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Fecha de Asistencia</label>
+                        {{ form.fecha_asistencia }}
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-success">Hora de Entrada</label>
+                            {{ form.hora_entrada }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-danger">Hora de Salida</label>
+                            {{ form.hora_salida }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                        <a href="{% url 'asistencia_list' %}" class="btn btn-light border">Regresar</a>
+                        <button type="submit" class="btn btn-rojo px-4 shadow-sm">
+                            <i class="bi bi-save me-2"></i>Actualizar Tiempos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
