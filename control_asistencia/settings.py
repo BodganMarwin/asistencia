@@ -137,5 +137,5 @@ AUTHENTICATION_BACKENDS = (
 		'appAuth.conexion.Autenticacion',
 	)
 
-LOGIN_REDIRECT_URL = ''  # Redirige a la página principal después del inicio de sesión exitoso
-LOGOUT_REDIRECT_URL = '/accounts/login' # Redirige a la página principal después de cerrar sesión
+LOGIN_REDIRECT_URL = 'pasante_list'  # Redirige a la página principal después del inicio de sesión exitoso
+LOGOUT_REDIRECT_URL = 'login' # Redirige a la página principal después de cerrar sesión
